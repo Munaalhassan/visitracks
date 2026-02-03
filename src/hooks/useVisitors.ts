@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Visitor, VisitorCategory } from '@/types/visitor';
 import { useToast } from '@/hooks/use-toast';
+import { useBuilding } from '@/contexts/BuildingContext';
 
 interface CreateVisitorData {
   session_id: string;
@@ -19,13 +20,16 @@ interface CreateVisitorData {
 export function useVisitors(sessionId?: string) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { currentBuilding } = useBuilding();
 
   const visitorsQuery = useQuery({
-    queryKey: ['visitors', sessionId],
+    queryKey: ['visitors', sessionId, currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       let query = supabase
         .from('visitors')
         .select('*, hosts(*)')
+        .eq('building_id', currentBuilding.id)
         .order('time_in', { ascending: false });
       
       if (sessionId) {
@@ -36,26 +40,30 @@ export function useVisitors(sessionId?: string) {
       if (error) throw error;
       return data as Visitor[];
     },
-    enabled: sessionId !== undefined,
+    enabled: sessionId !== undefined && !!currentBuilding,
   });
 
   const allVisitorsQuery = useQuery({
-    queryKey: ['visitors', 'all'],
+    queryKey: ['visitors', 'all', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const { data, error } = await supabase
         .from('visitors')
         .select('*, hosts(*)')
+        .eq('building_id', currentBuilding.id)
         .order('time_in', { ascending: false });
       if (error) throw error;
       return data as Visitor[];
     },
+    enabled: !!currentBuilding,
   });
 
   const createVisitor = useMutation({
     mutationFn: async (visitor: CreateVisitorData) => {
+      if (!currentBuilding) throw new Error('No building selected');
       const { data, error } = await supabase
         .from('visitors')
-        .insert(visitor)
+        .insert({ ...visitor, building_id: currentBuilding.id })
         .select('*, hosts(*)')
         .single();
       if (error) throw error;

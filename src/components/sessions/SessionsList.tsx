@@ -10,16 +10,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useSessions } from '@/hooks/useSessions';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, RotateCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 export function SessionsList() {
-  const { sessions, isLoading } = useSessions();
+  const { sessions, isLoading, reopenSession, activeSession } = useSessions();
 
   if (isLoading) {
     return <div>Loading sessions...</div>;
   }
+
+  const handleReopenSession = (sessionId: string) => {
+    reopenSession.mutate(sessionId);
+  };
 
   return (
     <Card>
@@ -63,9 +67,21 @@ export function SessionsList() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/session/${session.id}`}>View Log</Link>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/session/${session.id}`}>View Log</Link>
+                      </Button>
+                      {!session.is_active && !activeSession && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleReopenSession(session.id)}
+                          disabled={reopenSession.isPending}
+                        >
+                          <RotateCcw className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

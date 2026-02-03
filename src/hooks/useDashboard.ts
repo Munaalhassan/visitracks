@@ -1,11 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { useBuilding } from '@/contexts/BuildingContext';
 
 export function useDashboard() {
+  const { currentBuilding } = useBuilding();
+
   const statsQuery = useQuery({
-    queryKey: ['dashboard', 'stats'],
+    queryKey: ['dashboard', 'stats', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return null;
       const today = new Date();
       const todayStart = startOfDay(today).toISOString();
       const todayEnd = endOfDay(today).toISOString();
@@ -14,6 +18,7 @@ export function useDashboard() {
       const { count: todayCount } = await supabase
         .from('visitors')
         .select('*', { count: 'exact', head: true })
+        .eq('building_id', currentBuilding.id)
         .gte('time_in', todayStart)
         .lte('time_in', todayEnd);
 
@@ -21,6 +26,7 @@ export function useDashboard() {
       const { count: currentlyIn } = await supabase
         .from('visitors')
         .select('*', { count: 'exact', head: true })
+        .eq('building_id', currentBuilding.id)
         .is('time_out', null);
 
       // Total visitors this week
@@ -28,12 +34,14 @@ export function useDashboard() {
       const { count: weekCount } = await supabase
         .from('visitors')
         .select('*', { count: 'exact', head: true })
+        .eq('building_id', currentBuilding.id)
         .gte('time_in', weekStart);
 
-      // Total hosts
+      // Total hosts for this building
       const { count: hostCount } = await supabase
         .from('hosts')
         .select('*', { count: 'exact', head: true })
+        .eq('building_id', currentBuilding.id)
         .eq('is_active', true);
 
       return {
@@ -43,14 +51,17 @@ export function useDashboard() {
         activeHosts: hostCount ?? 0,
       };
     },
+    enabled: !!currentBuilding,
   });
 
   const categoryStatsQuery = useQuery({
-    queryKey: ['dashboard', 'categories'],
+    queryKey: ['dashboard', 'categories', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const { data, error } = await supabase
         .from('visitors')
-        .select('category');
+        .select('category')
+        .eq('building_id', currentBuilding.id);
       if (error) throw error;
 
       const counts: Record<string, number> = {};
@@ -63,11 +74,13 @@ export function useDashboard() {
         value,
       }));
     },
+    enabled: !!currentBuilding,
   });
 
   const weeklyTrendQuery = useQuery({
-    queryKey: ['dashboard', 'weekly'],
+    queryKey: ['dashboard', 'weekly', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const today = new Date();
       const days = [];
 
@@ -79,6 +92,7 @@ export function useDashboard() {
         const { count } = await supabase
           .from('visitors')
           .select('*', { count: 'exact', head: true })
+          .eq('building_id', currentBuilding.id)
           .gte('time_in', dayStart)
           .lte('time_in', dayEnd);
 
@@ -90,19 +104,23 @@ export function useDashboard() {
 
       return days;
     },
+    enabled: !!currentBuilding,
   });
 
   const recentVisitorsQuery = useQuery({
-    queryKey: ['dashboard', 'recent'],
+    queryKey: ['dashboard', 'recent', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const { data, error } = await supabase
         .from('visitors')
         .select('*, hosts(*)')
+        .eq('building_id', currentBuilding.id)
         .order('time_in', { ascending: false })
         .limit(5);
       if (error) throw error;
       return data;
     },
+    enabled: !!currentBuilding,
   });
 
   return {
