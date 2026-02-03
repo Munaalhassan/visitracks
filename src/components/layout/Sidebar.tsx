@@ -7,11 +7,14 @@ import {
   Search,
   Building2,
   Menu,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { useBuilding } from '@/contexts/BuildingContext';
+import { Badge } from '@/components/ui/badge';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -25,6 +28,12 @@ const navigation = [
 export function Sidebar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { currentBuilding, logout } = useBuilding();
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/select-building';
+  };
 
   return (
     <>
@@ -48,15 +57,26 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static flex flex-col",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex h-16 items-center gap-2 border-b px-6">
           <Building2 className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold">VisiTrack</span>
         </div>
+
+        {/* Current Building Badge */}
+        {currentBuilding && (
+          <div className="px-4 py-3 border-b">
+            <div className="text-xs text-muted-foreground mb-1">Current Building</div>
+            <Badge variant="outline" className="w-full justify-center py-1">
+              <Building2 className="h-3 w-3 mr-1" />
+              {currentBuilding.name}
+            </Badge>
+          </div>
+        )}
         
-        <nav className="flex flex-col gap-1 p-4">
+        <nav className="flex flex-col gap-1 p-4 flex-1">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -77,6 +97,18 @@ export function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Logout Button */}
+        <div className="p-4 border-t">
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Switch Building
+          </Button>
+        </div>
       </aside>
     </>
   );

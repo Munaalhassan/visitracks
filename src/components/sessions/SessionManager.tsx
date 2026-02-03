@@ -9,12 +9,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useSessions } from '@/hooks/useSessions';
-import { CalendarIcon, Play, Square, Clock } from 'lucide-react';
+import { CalendarIcon, Play, Square, Clock, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function SessionManager() {
-  const { activeSession, todaySession, createSession, endSession } = useSessions();
+  const { activeSession, todaySession, createSession, endSession, reopenSession } = useSessions();
   const [date, setDate] = useState<Date>(new Date());
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -26,6 +37,12 @@ export function SessionManager() {
   const handleEndSession = () => {
     if (activeSession) {
       endSession.mutate(activeSession.id);
+    }
+  };
+
+  const handleReopenSession = () => {
+    if (todaySession) {
+      reopenSession.mutate(todaySession.id);
     }
   };
 
@@ -50,21 +67,49 @@ export function SessionManager() {
               <p>Date: <span className="font-medium text-foreground">{format(new Date(activeSession.session_date), 'EEEE, MMMM d, yyyy')}</span></p>
               <p>Started: <span className="font-medium text-foreground">{format(new Date(activeSession.started_at), 'HH:mm')}</span></p>
             </div>
-            <Button 
-              variant="destructive" 
-              onClick={handleEndSession}
-              disabled={endSession.isPending}
-              className="w-full"
-            >
-              <Square className="h-4 w-4 mr-2" />
-              End Today's Session
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  disabled={endSession.isPending}
+                  className="w-full"
+                >
+                  <Square className="h-4 w-4 mr-2" />
+                  End Today's Session
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>End Attendance Session?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to end this session? You can reopen it later if needed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEndSession}>
+                    End Session
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         ) : (
           <div className="space-y-4">
             {todaySession && !todaySession.is_active ? (
-              <div className="text-sm text-muted-foreground">
-                Today's session has already ended at {format(new Date(todaySession.ended_at!), 'HH:mm')}
+              <div className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  Today's session ended at {format(new Date(todaySession.ended_at!), 'HH:mm')}
+                </div>
+                <Button 
+                  onClick={handleReopenSession}
+                  disabled={reopenSession.isPending}
+                  className="w-full"
+                  variant="outline"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reopen Today's Session
+                </Button>
               </div>
             ) : (
               <>

@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       attendance_sessions: {
         Row: {
+          building_id: string | null
           created_at: string
           ended_at: string | null
           id: string
@@ -26,6 +27,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          building_id?: string | null
           created_at?: string
           ended_at?: string | null
           id?: string
@@ -36,6 +38,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          building_id?: string | null
           created_at?: string
           ended_at?: string | null
           id?: string
@@ -45,10 +48,49 @@ export type Database = {
           started_at?: string
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_sessions_building_id_fkey"
+            columns: ["building_id"]
+            isOneToOne: false
+            referencedRelation: "buildings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buildings: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
         Relationships: []
       }
       hosts: {
         Row: {
+          building_id: string | null
           created_at: string
           department: string | null
           email: string | null
@@ -60,6 +102,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          building_id?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
@@ -71,6 +114,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          building_id?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
@@ -81,11 +125,20 @@ export type Database = {
           position?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hosts_building_id_fkey"
+            columns: ["building_id"]
+            isOneToOne: false
+            referencedRelation: "buildings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       visitors: {
         Row: {
           badge_number: string | null
+          building_id: string | null
           category: Database["public"]["Enums"]["visitor_category"]
           company: string | null
           created_at: string
@@ -104,6 +157,7 @@ export type Database = {
         }
         Insert: {
           badge_number?: string | null
+          building_id?: string | null
           category?: Database["public"]["Enums"]["visitor_category"]
           company?: string | null
           created_at?: string
@@ -122,6 +176,7 @@ export type Database = {
         }
         Update: {
           badge_number?: string | null
+          building_id?: string | null
           category?: Database["public"]["Enums"]["visitor_category"]
           company?: string | null
           created_at?: string
@@ -139,6 +194,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "visitors_building_id_fkey"
+            columns: ["building_id"]
+            isOneToOne: false
+            referencedRelation: "buildings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "visitors_host_id_fkey"
             columns: ["host_id"]

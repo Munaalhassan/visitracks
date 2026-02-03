@@ -1,5 +1,15 @@
 export type VisitorCategory = 'guest' | 'contractor' | 'delivery' | 'interview' | 'vendor' | 'other';
 
+export interface Building {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Host {
   id: string;
   name: string;
@@ -8,6 +18,7 @@ export interface Host {
   email: string | null;
   phone: string | null;
   is_active: boolean;
+  building_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -19,6 +30,7 @@ export interface AttendanceSession {
   ended_at: string | null;
   is_active: boolean;
   notes: string | null;
+  building_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -38,6 +50,7 @@ export interface Visitor {
   signature_verified: boolean;
   badge_number: string | null;
   remarks: string | null;
+  building_id: string | null;
   created_at: string;
   updated_at: string;
   hosts?: Host | null;

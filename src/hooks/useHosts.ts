@@ -2,41 +2,50 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Host } from '@/types/visitor';
 import { useToast } from '@/hooks/use-toast';
+import { useBuilding } from '@/contexts/BuildingContext';
 
 export function useHosts() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { currentBuilding } = useBuilding();
 
   const hostsQuery = useQuery({
-    queryKey: ['hosts'],
+    queryKey: ['hosts', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const { data, error } = await supabase
         .from('hosts')
         .select('*')
+        .eq('building_id', currentBuilding.id)
         .order('name');
       if (error) throw error;
       return data as Host[];
     },
+    enabled: !!currentBuilding,
   });
 
   const activeHostsQuery = useQuery({
-    queryKey: ['hosts', 'active'],
+    queryKey: ['hosts', 'active', currentBuilding?.id],
     queryFn: async () => {
+      if (!currentBuilding) return [];
       const { data, error } = await supabase
         .from('hosts')
         .select('*')
+        .eq('building_id', currentBuilding.id)
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
       return data as Host[];
     },
+    enabled: !!currentBuilding,
   });
 
   const createHost = useMutation({
-    mutationFn: async (host: Omit<Host, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (host: Omit<Host, 'id' | 'created_at' | 'updated_at' | 'building_id'>) => {
+      if (!currentBuilding) throw new Error('No building selected');
       const { data, error } = await supabase
         .from('hosts')
-        .insert(host)
+        .insert({ ...host, building_id: currentBuilding.id })
         .select()
         .single();
       if (error) throw error;
