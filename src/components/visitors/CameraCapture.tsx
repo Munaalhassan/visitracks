@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Camera, RotateCcw, Check, X } from 'lucide-react';
 
@@ -21,9 +21,6 @@ export function CameraCapture({ onCapture, currentPhotoUrl }: CameraCaptureProps
         video: { facingMode: 'user', width: 640, height: 480 },
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setIsOpen(true);
       setCapturedImage(null);
     } catch (err) {
@@ -31,6 +28,14 @@ export function CameraCapture({ onCapture, currentPhotoUrl }: CameraCaptureProps
       alert('Camera access denied. Please allow camera permissions.');
     }
   }, []);
+
+  // Assign stream to video element after it renders
+  useEffect(() => {
+    if (isOpen && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [isOpen]);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
