@@ -61,7 +61,7 @@ export function VisitorsTable({ visitors, showActions = true }: VisitorsTablePro
             <TableRow key={visitor.id}>
               <TableCell className="font-medium">{visitor.name}</TableCell>
               <TableCell>{visitor.company || '-'}</TableCell>
-              <TableCell>{visitor.hosts?.name || '-'}</TableCell>
+              <TableCell>{visitor.hosts?.name || visitor.host_name || '-'}</TableCell>
               <TableCell>
                 <Badge className={getCategoryColor(visitor.category)}>
                   {visitor.category}

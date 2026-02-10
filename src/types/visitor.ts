@@ -39,6 +39,7 @@ export interface Visitor {
   id: string;
   session_id: string;
   host_id: string | null;
+  host_name: string | null;
   name: string;
   company: string | null;
   phone: string | null;
@@ -50,6 +51,7 @@ export interface Visitor {
   signature_verified: boolean;
   badge_number: string | null;
   remarks: string | null;
+  photo_url: string | null;
   building_id: string | null;
   created_at: string;
   updated_at: string;

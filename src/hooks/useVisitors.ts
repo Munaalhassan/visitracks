@@ -7,6 +7,7 @@ import { useBuilding } from '@/contexts/BuildingContext';
 interface CreateVisitorData {
   session_id: string;
   host_id?: string | null;
+  host_name?: string | null;
   name: string;
   company?: string | null;
   phone?: string | null;
@@ -15,6 +16,7 @@ interface CreateVisitorData {
   purpose?: string | null;
   badge_number?: string | null;
   remarks?: string | null;
+  photo_url?: string | null;
 }
 
 export function useVisitors(sessionId?: string) {
