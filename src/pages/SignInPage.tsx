@@ -43,7 +43,7 @@ export default function SignInPage() {
                       <div>
                         <p className="font-medium">{visitor.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Visiting: {visitor.hosts?.name || 'N/A'}
+                          Visiting: {visitor.hosts?.name || visitor.host_name || 'N/A'}
                         </p>
                       </div>
                     </div>

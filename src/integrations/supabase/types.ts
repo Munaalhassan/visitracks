@@ -144,9 +144,11 @@ export type Database = {
           created_at: string
           email: string | null
           host_id: string | null
+          host_name: string | null
           id: string
           name: string
           phone: string | null
+          photo_url: string | null
           purpose: string | null
           remarks: string | null
           session_id: string
@@ -163,9 +165,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           host_id?: string | null
+          host_name?: string | null
           id?: string
           name: string
           phone?: string | null
+          photo_url?: string | null
           purpose?: string | null
           remarks?: string | null
           session_id: string
@@ -182,9 +186,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           host_id?: string | null
+          host_name?: string | null
           id?: string
           name?: string
           phone?: string | null
+          photo_url?: string | null
           purpose?: string | null
           remarks?: string | null
           session_id?: string
