@@ -20,6 +20,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Sign In Visitor', href: '/sign-in', icon: UserPlus },
   { name: 'Today\'s Log', href: '/today', icon: CalendarDays },
+  { name: 'All Visitors', href: '/all-visitors', icon: Users },
   { name: 'Search Visitors', href: '/search', icon: Search },
   { name: 'Sessions', href: '/sessions', icon: CalendarDays },
   { name: 'Hosts', href: '/hosts', icon: Users },

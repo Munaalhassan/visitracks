@@ -9,9 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Visitor } from '@/types/visitor';
 import { useVisitors } from '@/hooks/useVisitors';
-import { CheckCircle, LogOut, Clock } from 'lucide-react';
+import { CheckCircle, LogOut, Clock, User } from 'lucide-react';
 
 interface VisitorsTableProps {
   visitors: Visitor[];
@@ -46,6 +47,7 @@ export function VisitorsTable({ visitors, showActions = true }: VisitorsTablePro
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Photo</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Company</TableHead>
             <TableHead>Visiting</TableHead>
@@ -59,6 +61,14 @@ export function VisitorsTable({ visitors, showActions = true }: VisitorsTablePro
         <TableBody>
           {visitors.map((visitor) => (
             <TableRow key={visitor.id}>
+              <TableCell>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={visitor.photo_url ?? undefined} alt={visitor.name} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </TableCell>
               <TableCell className="font-medium">{visitor.name}</TableCell>
               <TableCell>{visitor.company || '-'}</TableCell>
               <TableCell>{visitor.hosts?.name || visitor.host_name || '-'}</TableCell>
