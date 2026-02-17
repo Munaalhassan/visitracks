@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Visitor } from '@/types/visitor';
 import { useVisitors } from '@/hooks/useVisitors';
 import { CheckCircle, LogOut, Clock, User } from 'lucide-react';
@@ -21,6 +23,7 @@ interface VisitorsTableProps {
 
 export function VisitorsTable({ visitors, showActions = true }: VisitorsTableProps) {
   const { signOutVisitor, verifySignature } = useVisitors();
+  const [selectedPhoto, setSelectedPhoto] = useState<{ url: string; name: string } | null>(null);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -62,7 +65,10 @@ export function VisitorsTable({ visitors, showActions = true }: VisitorsTablePro
           {visitors.map((visitor) => (
             <TableRow key={visitor.id}>
               <TableCell>
-                <Avatar className="h-10 w-10">
+                <Avatar
+                  className="h-10 w-10 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                  onClick={() => visitor.photo_url && setSelectedPhoto({ url: visitor.photo_url, name: visitor.name })}
+                >
                   <AvatarImage src={visitor.photo_url ?? undefined} alt={visitor.name} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />
@@ -123,6 +129,21 @@ export function VisitorsTable({ visitors, showActions = true }: VisitorsTablePro
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+        <DialogContent className="sm:max-w-md">
+          {selectedPhoto && (
+            <div className="flex flex-col items-center gap-4">
+              <img
+                src={selectedPhoto.url}
+                alt={selectedPhoto.name}
+                className="w-full max-h-96 object-contain rounded-lg"
+              />
+              <p className="text-lg font-semibold">{selectedPhoto.name}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
