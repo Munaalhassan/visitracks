@@ -29,8 +29,8 @@ export default function SearchPage() {
   const { allVisitors, isLoading } = useVisitors();
   const { hosts } = useHosts();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedHost, setSelectedHost] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedHost, setSelectedHost] = useState<string>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const filteredVisitors = useMemo(() => {
@@ -48,12 +48,12 @@ export default function SearchPage() {
       }
 
       // Category filter
-      if (selectedCategory && visitor.category !== selectedCategory) {
+      if (selectedCategory && selectedCategory !== 'all' && visitor.category !== selectedCategory) {
         return false;
       }
 
       // Host filter
-      if (selectedHost && visitor.host_id !== selectedHost) {
+      if (selectedHost && selectedHost !== 'all' && visitor.host_id !== selectedHost) {
         return false;
       }
 
@@ -73,12 +73,12 @@ export default function SearchPage() {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedHost('');
+    setSelectedCategory('all');
+    setSelectedHost('all');
     setDateRange(undefined);
   };
 
-  const hasActiveFilters = searchTerm || selectedCategory || selectedHost || dateRange;
+  const hasActiveFilters = searchTerm || (selectedCategory && selectedCategory !== 'all') || (selectedHost && selectedHost !== 'all') || dateRange;
 
   return (
     <Layout>
@@ -111,7 +111,7 @@ export default function SearchPage() {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {VISITOR_CATEGORIES.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}
@@ -125,7 +125,7 @@ export default function SearchPage() {
                   <SelectValue placeholder="All Hosts" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Hosts</SelectItem>
+                  <SelectItem value="all">All Hosts</SelectItem>
                   {hosts.map((host) => (
                     <SelectItem key={host.id} value={host.id}>
                       {host.name}

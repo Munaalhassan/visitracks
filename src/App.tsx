@@ -11,6 +11,7 @@ import SearchPage from "./pages/SearchPage";
 import SessionsPage from "./pages/SessionsPage";
 import SessionDetailPage from "./pages/SessionDetailPage";
 import HostsPage from "./pages/HostsPage";
+import AllVisitorsPage from "./pages/AllVisitorsPage";
 import BuildingSelectPage from "./pages/BuildingSelectPage";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ function AppRoutes() {
       <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
       <Route path="/sessions" element={<ProtectedRoute><SessionsPage /></ProtectedRoute>} />
       <Route path="/session/:id" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />
+      <Route path="/all-visitors" element={<ProtectedRoute><AllVisitorsPage /></ProtectedRoute>} />
       <Route path="/hosts" element={<ProtectedRoute><HostsPage /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
