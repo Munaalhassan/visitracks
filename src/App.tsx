@@ -53,7 +53,13 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      {/*
+        `import.meta.env.BASE_URL` will be set to the `base` value from
+        vite.config.ts (e.g. "/visitracks/"). Using it as the
+        `basename` ensures React Router prefixes all routes correctly when
+        the app is served from a subdirectory.
+      */}
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <BuildingProvider>
           <AppRoutes />
         </BuildingProvider>
